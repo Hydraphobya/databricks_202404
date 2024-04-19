@@ -20,7 +20,7 @@ DA.conclude_setup()
 # COMMAND ----------
 
 # TODO
-my_name = None
+my_name = 'Test name of some random person'
 
 # COMMAND ----------
 
