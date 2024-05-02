@@ -102,11 +102,27 @@
 -- COMMAND ----------
 
 -- TODO
+
 CREATE OR REPLACE TEMP VIEW events_pivot
-<FILL_IN>
+AS
+with cte as (
+  select user_id as user, event_name, count(1) as event_count
+  from events
+  group by user_id, event_name
+)
+select *
+from cte
+PIVOT(
+  sum(event_count) for event_name in  
 ("cart", "pillows", "login", "main", "careers", "guest", "faq", "down", "warranty", "finalize", 
 "register", "shipping_info", "checkout", "mattresses", "add_item", "press", "email_coupon", 
 "cc_info", "foam", "reviews", "original", "delivery", "premium")
+)
+
+
+-- COMMAND ----------
+
+select * from events_pivot
 
 -- COMMAND ----------
 
@@ -118,9 +134,15 @@ CREATE OR REPLACE TEMP VIEW events_pivot
 -- COMMAND ----------
 
 -- MAGIC %python
+-- MAGIC from pyspark.sql.functions import count, col
 -- MAGIC # TODO
 -- MAGIC (spark.read
--- MAGIC     <FILL_IN>
+-- MAGIC     .table("events")
+-- MAGIC     .groupBy("user_id", "event_name")
+-- MAGIC     .agg(count("user_id").alias("event_name_count"))
+-- MAGIC     .groupBy("user_id")
+-- MAGIC     .pivot("event_name")
+-- MAGIC     .sum("event_name_count")
 -- MAGIC     .createOrReplaceTempView("events_pivot"))
 
 -- COMMAND ----------
@@ -182,7 +204,13 @@ CREATE OR REPLACE TEMP VIEW events_pivot
 
 -- TODO
 CREATE OR REPLACE TEMP VIEW clickpaths AS
-<FILL_IN>
+select ep.* , t.*
+from events_pivot as ep
+inner join transactions as t
+on (ep.user = t.user_id);
+
+drop view clickpaths;
+
 
 -- COMMAND ----------
 
@@ -194,10 +222,16 @@ CREATE OR REPLACE TEMP VIEW clickpaths AS
 -- COMMAND ----------
 
 -- MAGIC %python
+-- MAGIC from pyspark.sql.functions import col
 -- MAGIC # TODO
 -- MAGIC (spark.read
--- MAGIC     <FILL_IN>
+-- MAGIC  .table("events_pivot")
+-- MAGIC  .join(spark.read.table("transactions"), col("events_pivot.user_id") == col("transactions.user_id"))
 -- MAGIC     .createOrReplaceTempView("clickpaths"))
+
+-- COMMAND ----------
+
+describe clickpaths
 
 -- COMMAND ----------
 

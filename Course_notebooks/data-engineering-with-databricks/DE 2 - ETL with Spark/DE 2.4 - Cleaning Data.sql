@@ -111,6 +111,7 @@ SELECT count(*) FROM users_dirty WHERE email IS NULL;
 
 SELECT DISTINCT(*) FROM users_dirty
 
+
 -- COMMAND ----------
 
 -- MAGIC %python

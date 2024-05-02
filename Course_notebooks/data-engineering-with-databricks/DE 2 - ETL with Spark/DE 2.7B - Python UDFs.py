@@ -193,6 +193,7 @@ spark.udf.register("sql_vectorized_udf", vectorized_udf)
 
 DA.cleanup()
 
+
 # COMMAND ----------
 
 # MAGIC %md-sandbox
